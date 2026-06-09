@@ -1,9 +1,8 @@
-# === Large binary files (upload as GitHub Release assets) ===
-video.mp4
-TodoSnap-dist/TodoSnap.exe
-
-# === Claude / AI tool internals ===
+# === Excluded directories ===
+other/
 .clawhub/
+skills/
+TodoSnap-dist/
 
 # === .NET build output (also covered by TodoSnap/.gitignore) ===
 bin/
