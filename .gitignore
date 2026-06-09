@@ -1,4 +1,6 @@
 # === Excluded directories ===
+# Hide .gitignore files from GitHub
+.gitignore
 other/
 .clawhub/
 skills/
