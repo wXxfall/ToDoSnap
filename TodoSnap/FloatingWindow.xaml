@@ -1,0 +1,91 @@
+<Window x:Class="TodoSnap.FloatingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TodoSnap 待办"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ShowActivated="False"
+        ResizeMode="CanResize" SizeToContent="Manual"
+        Width="260" Height="320" MinWidth="180" MinHeight="120"
+        FontSize="14" FontFamily="Segoe UI, Microsoft YaHei UI"
+        Loaded="Window_Loaded" LocationChanged="Window_LocationChanged"
+        SizeChanged="Window_SizeChanged">
+
+    <!-- CaptionHeight=0 → whole surface is client (we drag via Root); the resize
+         border lets the user freely stretch the bar from any edge/corner. -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Grid>
+        <!-- Background layer: faded by the transparency slider; content stays opaque. -->
+        <Border x:Name="BgLayer" Background="{DynamicResource Brush.PanelBg}" CornerRadius="10"/>
+
+        <!-- ================= Expanded view ================= -->
+        <Border x:Name="ExpandedRoot" CornerRadius="10" Padding="10" Background="Transparent"
+                MouseLeftButtonDown="Root_MouseLeftButtonDown"
+                MouseEnter="ExpandedRoot_MouseEnter" MouseLeave="ExpandedRoot_MouseLeave">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="待办" Foreground="{DynamicResource Brush.TextMuted}"
+                           FontSize="12" Margin="2,0,0,6"/>
+
+                <Grid Grid.Row="1">
+                    <TextBlock x:Name="EmptyHint" Text="暂无待办" Foreground="{DynamicResource Brush.TextMuted}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="List">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Tag="ItemRoot" Background="Transparent" Height="36" Margin="0,2">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Button Grid.Column="0" Style="{StaticResource CircleButton}"
+                                                    VerticalAlignment="Center" Margin="2,0,8,0"
+                                                    Click="Complete_Click"/>
+
+                                            <TextBlock Grid.Column="1" Text="{Binding Description}"
+                                                       Foreground="{DynamicResource Brush.TextPrimary}"
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       ToolTip="{Binding Description}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+
+                <Button Grid.Row="2" x:Name="BtnMore" Content="+N 更多" Click="More_Click"
+                        Style="{StaticResource FlatButton}" FontSize="12"
+                        HorizontalAlignment="Center" Margin="0,6,0,0"
+                        Padding="10,3" Visibility="Collapsed"/>
+            </Grid>
+        </Border>
+
+        <!-- ================= Collapsed edge strip ================= -->
+        <Border x:Name="CollapsedStrip" CornerRadius="8" Background="Transparent" Cursor="Hand"
+                Visibility="Collapsed"
+                MouseLeftButtonDown="Strip_MouseLeftButtonDown">
+            <Grid>
+                <!-- count badge -->
+                <Border x:Name="Badge" Background="{DynamicResource Brush.Accent}" CornerRadius="9"
+                        MinWidth="18" Height="18" Padding="3,0"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock x:Name="BadgeText" Text="0" Foreground="White" FontSize="11"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

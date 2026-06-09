@@ -1,0 +1,136 @@
+<Window x:Class="TodoSnap.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TodoSnap 设置" Width="380" SizeToContent="Height"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ShowInTaskbar="True" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        FontSize="14" FontFamily="Segoe UI, Microsoft YaHei UI"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <Grid MouseLeftButtonDown="Root_MouseLeftButtonDown">
+        <Border x:Name="BgLayer" CornerRadius="12"
+                Background="{DynamicResource Brush.WindowBg}"
+                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1"/>
+
+        <Border CornerRadius="12" Background="Transparent" Padding="18,14">
+            <StackPanel>
+
+                <!-- Title -->
+                <Grid Margin="0,0,0,10">
+                    <TextBlock Text="设置" Foreground="{DynamicResource Brush.TextPrimary}"
+                               FontSize="16" VerticalAlignment="Center"/>
+                    <Button Content="✕" Width="24" Height="24" HorizontalAlignment="Right"
+                            Style="{StaticResource FlatButton}" Padding="0" FontSize="12"
+                            Click="Close_Click" ToolTip="关闭"/>
+                </Grid>
+
+                <!-- ===== 外观 ===== -->
+                <TextBlock Text="外观" Foreground="{DynamicResource Brush.TextSecondary}"
+                           FontSize="12" Margin="0,6,0,6"/>
+                <CheckBox x:Name="ChkLight" Content="使用浅色主题"
+                          Foreground="{DynamicResource Brush.TextPrimary}" Margin="0,0,0,8"
+                          Checked="Theme_Changed" Unchecked="Theme_Changed"/>
+                <Grid Margin="0,0,0,10">
+                    <TextBlock Text="背景透明度" Foreground="{DynamicResource Brush.TextPrimary}"
+                               VerticalAlignment="Center"/>
+                    <Slider x:Name="SldOpacity" Minimum="0.6" Maximum="1.0" Width="180"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            TickFrequency="0.05" IsSnapToTickEnabled="True"
+                            ValueChanged="Opacity_Changed"/>
+                </Grid>
+
+                <Border Height="1" Background="{DynamicResource Brush.Border}" Margin="0,2,0,10"/>
+
+                <!-- ===== 快捷键 ===== -->
+                <TextBlock Text="全局快捷键（唤起主窗口）" Foreground="{DynamicResource Brush.TextSecondary}"
+                           FontSize="12" Margin="0,0,0,6"/>
+                <Grid Margin="0,0,0,4">
+                    <TextBox x:Name="TxtHotkey" IsReadOnly="True" Focusable="True"
+                             Background="{DynamicResource Brush.InputBg}"
+                             Foreground="{DynamicResource Brush.TextPrimary}"
+                             BorderThickness="0" Padding="8,6" Width="240" HorizontalAlignment="Left"
+                             Text="Alt + `" ToolTip="点击后按下新的组合键"
+                             GotFocus="Hotkey_GotFocus" LostFocus="Hotkey_LostFocus"
+                             PreviewKeyDown="Hotkey_PreviewKeyDown"/>
+                    <Button Content="录制" HorizontalAlignment="Right" Style="{StaticResource FlatButton}"
+                            Click="RecordHotkey_Click"/>
+                </Grid>
+                <TextBlock x:Name="TxtHotkeyHint" Text="" Foreground="#E57373" FontSize="12"
+                           Margin="0,0,0,10" Visibility="Collapsed"/>
+
+                <Border Height="1" Background="{DynamicResource Brush.Border}" Margin="0,2,0,10"/>
+
+                <!-- ===== API ===== -->
+                <TextBlock Text="在线 AI（可选）" Foreground="{DynamicResource Brush.TextSecondary}"
+                           FontSize="12" Margin="0,0,0,6"/>
+
+                <!-- API Key: masked by default, eye-button toggles plain text. -->
+                <Border Background="{DynamicResource Brush.InputBg}" CornerRadius="6"
+                        Margin="0,0,0,6">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <PasswordBox x:Name="PwApiKey"
+                                         Background="Transparent"
+                                         Foreground="{DynamicResource Brush.TextPrimary}"
+                                         CaretBrush="{DynamicResource Brush.TextPrimary}"
+                                         BorderThickness="0" Padding="8,6"
+                                         PasswordChar="●"
+                                         PasswordChanged="ApiKey_PasswordChanged"/>
+                            <TextBox x:Name="TxtApiKey"
+                                     Background="Transparent"
+                                     Foreground="{DynamicResource Brush.TextPrimary}"
+                                     CaretBrush="{DynamicResource Brush.TextPrimary}"
+                                     BorderThickness="0" Padding="8,6"
+                                     Visibility="Collapsed"
+                                     TextChanged="ApiKey_TextChanged"/>
+                            <TextBlock x:Name="TxtApiKeyHint" Text="API Key（留空则离线 OCR）"
+                                       Foreground="{DynamicResource Brush.TextMuted}"
+                                       IsHitTestVisible="False"
+                                       Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Button Grid.Column="1" x:Name="BtnRevealKey" Content="显示"
+                                Style="{StaticResource FlatButton}"
+                                Background="Transparent"
+                                Padding="8,0" Margin="2,2,2,2" MinWidth="44" Height="28"
+                                FontSize="12" VerticalAlignment="Center"
+                                Click="RevealKey_Click" ToolTip="显示 / 隐藏 API Key"/>
+                    </Grid>
+                </Border>
+
+                <TextBox x:Name="TxtEndpoint" Style="{StaticResource HintBox}" Margin="0,0,0,6"
+                         Tag="Endpoint（默认 OpenAI；Kimi 填 https://api.moonshot.cn/v1）"/>
+                <TextBox x:Name="TxtModel" Style="{StaticResource HintBox}" Margin="0,0,0,8"
+                         Tag="Model（默认 gpt-4o-mini；Kimi 视觉示例：moonshot-v1-8k-vision-preview）"/>
+                <Grid Margin="0,0,0,6">
+                    <TextBlock x:Name="TxtApiStatus" Foreground="{DynamicResource Brush.TextMuted}"
+                               FontSize="12" VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               MaxWidth="240" HorizontalAlignment="Left"/>
+                    <Button Content="保存并测试" HorizontalAlignment="Right"
+                            Style="{StaticResource AccentButton}" Click="SaveApi_Click"/>
+                </Grid>
+                <TextBlock x:Name="TxtApiError" Text="" Foreground="#E57373" FontSize="12"
+                           TextWrapping="Wrap" Margin="0,0,0,10"
+                           Visibility="Collapsed"/>
+
+                <Border Height="1" Background="{DynamicResource Brush.Border}" Margin="0,2,0,10"/>
+
+                <!-- ===== 系统 ===== -->
+                <TextBlock Text="系统" Foreground="{DynamicResource Brush.TextSecondary}"
+                           FontSize="12" Margin="0,0,0,6"/>
+                <CheckBox x:Name="ChkStartup" Content="开机自启"
+                          Foreground="{DynamicResource Brush.TextPrimary}" Margin="0,0,0,6"
+                          Checked="Startup_Changed" Unchecked="Startup_Changed"/>
+                <CheckBox x:Name="ChkFloating" Content="显示待办栏"
+                          Foreground="{DynamicResource Brush.TextPrimary}" Margin="0,0,0,8"
+                          Checked="Floating_Changed" Unchecked="Floating_Changed"/>
+                <Button Content="重置待办栏位置/尺寸" HorizontalAlignment="Left"
+                        Style="{StaticResource FlatButton}" Click="ResetFloating_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

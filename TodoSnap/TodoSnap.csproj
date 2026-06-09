@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- Windows TFM gives access to the WinRT projection (Windows.Media.Ocr, etc.) -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <!-- App still runs on Windows 10 1809+ -->
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <!-- WinForms only for the lightweight NotifyIcon (system tray) and System.Drawing -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>TodoSnap</AssemblyName>
+    <RootNamespace>TodoSnap</RootNamespace>
+    <Version>1.1.1</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Only set the exe icon if it has been generated (see Resources/gen_icon.py) -->
+    <ApplicationIcon Condition="Exists('Resources\app.ico')">Resources\app.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <!-- WinForms/Drawing are used only via the `WinForms.`-prefixed alias and explicit
+       `using System.Drawing;`. Drop their implicit global usings so WPF types
+       (Application, MessageBox, Clipboard, Point, Button, …) resolve unambiguously. -->
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <!-- Single-file publish defaults; trimming is intentionally OFF (WPF is not fully
+       trim-safe). See README for publish commands. -->
+  <PropertyGroup Condition="'$(PublishSingleFile)' == 'true'">
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
+  <!-- Copy the icon next to the exe so the tray icon can load it at runtime
+       (the exe's embedded icon comes from ApplicationIcon above). -->
+  <ItemGroup Condition="Exists('Resources\app.ico')">
+    <Content Include="Resources\app.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
