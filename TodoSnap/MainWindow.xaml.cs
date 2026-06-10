@@ -207,13 +207,8 @@ public partial class MainWindow : Window
         if (string.IsNullOrWhiteSpace(result.Text)) return "";
         if (!result.Online) return result.Text;
 
-        var lines = result.Text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-        for (int i = 0; i < lines.Length; i++)
-        {
-            string s = lines[i].Trim();
-            lines[i] = s.StartsWith(AiPrefix, StringComparison.Ordinal) ? s : AiPrefix + s;
-        }
-        return string.Join("\n", lines);
+        string text = result.Text.Trim();
+        return text.StartsWith(AiPrefix, StringComparison.Ordinal) ? text : AiPrefix + text;
     }
 
     private void ShowStatus(string message)

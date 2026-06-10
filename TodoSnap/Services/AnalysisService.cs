@@ -407,13 +407,13 @@ public class AnalysisService
         return text;
     }
 
-    /// <summary>AI output: split into lines, strip bullets/numbering, clamp each.</summary>
+    /// <summary>AI output: split into lines, strip bullets/numbering, keep only the
+    /// first (most important) line — one todo per image.</summary>
     private static string CleanMultiLine(string? raw)
     {
         if (string.IsNullOrWhiteSpace(raw)) return "";
 
         var lines = raw.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        var cleaned = new List<string>(lines.Length);
         foreach (var line in lines)
         {
             // Strip common list decorations: "- ", "* ", "1. ", "1、", "•", backticks, etc.
@@ -423,8 +423,8 @@ public class AnalysisService
             l = l.Trim('`', ' ', '\t');
             if (l.Length == 0) continue;
             if (l.Length > MaxLineLen) l = l[..MaxLineLen];
-            cleaned.Add(l);
+            return l; // keep only the first meaningful line
         }
-        return string.Join("\n", cleaned);
+        return "";
     }
 }
